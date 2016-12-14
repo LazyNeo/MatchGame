@@ -64,7 +64,7 @@ export default {
         newList[(i + 1) % 6] = showList[i]
       }
       this.showList = newList
-      this.$dispatch('item-click', this.x, this.y)
+      this.$emit('item-click', this.x, this.y)
     }
   }
 }
@@ -117,7 +117,7 @@ export default {
     .non-active .line:after{
       background-color: yellow;
     }
-    
+
     .line-1{
       transform: rotate(@DEG);
     }

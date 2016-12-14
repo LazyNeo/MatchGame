@@ -3,7 +3,7 @@
     <div class="feildS">
       <div class="feildT">
         <div style="position:relative;overflow:hidden;height:100%;">
-          
+
         </div>
       </div>
     </div>
@@ -11,8 +11,10 @@
   <!-- <div class="feild-line feild-line-">
     <hexagon-component :p-msg="msg" :show-list.sync="showLists[0]" class="feild-item"></hexagon-component>
   </div> -->
-  <div v-for="(index,line) in feilds" class="feild-line feild-line-{{index + 1}}">
-    <hexagon-component title="x:{{index}},y:{{$index}}"  v-for="(index2,item) in feilds[index]" v-bind:class="{'non-active' : !feildsShow['a' + index + '_' + $index].active}" :active.sync="item.active" :show-list.sync="item.showList" :init-item="item.initItem" :x="index" :y="$index" ></hexagon-component>
+  <div class="">
+    <div v-for="(line, index) in feilds" :class="'feild-line feild-line-' + (index + 1)">
+      <hexagon-component :title="'x:' + index + ',y:' + $index"  v-for="(index2,item) in feilds[index]" v-bind:class="{'non-active' : !feildsShow['a' + index + '_' + $index]}" :active.sync="item.active" :show-list.sync="item.showList" :init-item="item.initItem" :x="index" :y="$index" ></hexagon-component>
+    </div>
   </div>
 </template>
 
@@ -240,22 +242,22 @@ export default {
       margin-left: 72px;
     }
     .feild-line-1{
-      left:100px; 
+      left:100px;
     }
     .feild-line-2{
       top:94px;
-      left:50px; 
+      left:50px;
     }
     .feild-line-3{
       top:180px;
-      left:0px; 
+      left:0px;
     }
     .feild-line-4{
       top:266px;
-      left:50px; 
+      left:50px;
     }
     .feild-line-5{
       top:351px;
-      left:100px; 
+      left:100px;
     }
 </style>
