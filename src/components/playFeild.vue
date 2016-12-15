@@ -39,7 +39,8 @@ export default {
         a2_2: {
           active: false
         }
-      }
+      },
+      activeNum: 0
     }
   },
   props: {
@@ -155,6 +156,7 @@ export default {
       let row = this.feilds[x]
       row[y] = item
       Vue.set(this.feilds, x, row)
+      this.activeNum++
       // this.feilds = feildsT
       console.log('delight x: ' + x + 'y: ' + y)
       for (let i = 0; i < 6; i++) {
@@ -170,6 +172,9 @@ export default {
       }
     },
     putOffAll () {
+      // reset activeNum
+      this.activeNum = 0
+      // make all item non-active
       let feild = this.feilds
       for (let i = 0, length = this.feilds.length; i < length; i++) {
         for (let j = 0, length2 = this.feilds[i].length; j < length2; j++) {
@@ -203,11 +208,22 @@ export default {
   },
   created: function () {
     this.feilds = this.initFeild()
+    this.activeItem(-1, this.initPosition.x, this.initPosition.y)
   },
   ready: function () {
   },
   components: {
     'hexagon-component': require('./Hexagon.vue')
+  },
+  watch: {
+    activeNum (newVal) {
+      if (newVal === 19) {
+        setTimeout(() => {
+          window.alert('great! you solve it! let`s start another game!')
+          this.feilds = this.initFeild()
+        }, 500)
+      }
+    }
   }
 }
 </script>
