@@ -13,22 +13,16 @@
   </div> -->
   <div class="">
     <div v-for="(line, index) in feilds" :class="'feild-line feild-line-' + (index + 1)">
-      <hexagon-component :title="'x:' + index + ',y:' + $index"  v-for="(index2,item) in feilds[index]" v-bind:class="{'non-active' : !feildsShow['a' + index + '_' + $index]}" :active.sync="item.active" :show-list.sync="item.showList" :init-item="item.initItem" :x="index" :y="$index" ></hexagon-component>
+      <hexagon-component :title="'x:' + index + ',y:' + index2"  v-for="(item,index2) in feilds[index]" v-bind:class="{'non-active' : !item.active}" :active.sync="item.active" :show-list.sync="item.showList" :init-item="item.initItem"  :x="index" :y="index2" @turn="turnItem"></hexagon-component>
     </div>
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
 export default {
   data () {
     return {
-      // note: changing this line won't causes changes
-      // with hot-reload because the reloaded component
-      // preserves its current state and we are modifying
-      // its initial state.
-      msg: 'from p',
-      // showList: [false, true, true, true, true, true],
-      hexagons: [1, 1, 1, 2],
       initPosition: {
         x: 3,
         y: 3
@@ -54,7 +48,7 @@ export default {
     initFeild: function () {
       // let onePipe = [false, false, false, true, false, false]
       // let twoPipe = [false, true, false, false, true, true]
-      let threePipe = [false, true, false, false, false, false]
+      let threePipe = [false, true, false, true, false, true]
       let level = 3
       let feildsT = this.feilds
       for (let i = level, index = 0; i <= 2 * level - 1; i++, index++) {
@@ -63,9 +57,7 @@ export default {
           feildsT[index][j] = {}
           feildsT[index][j].showList = threePipe
           feildsT[index][j].border = this.getBorder(index, j, level)
-          this.feildsShow['a' + index + '_' + j] = {
-            active: false
-          }
+          feildsT[index][j].active = false
         }
       }
       if (level > 1) {
@@ -81,12 +73,7 @@ export default {
           }
         }
       }
-      feildsT[this.initPosition.x][this.initPosition.y].initItem = true
-      // feildsT[this.initPosition.x][this.initPosition.y].active = true
-      // feildsT[1][1].active = true
-      this.feildsShow['a' + this.initPosition.x + '_' + this.initPosition.y] = {
-        active: true
-      }
+      feildsT[this.initPosition.x][this.initPosition.y].active = true
       return feildsT
     },
     getBorder: function (x, y, level) {
@@ -128,18 +115,18 @@ export default {
         // 顶部
         TL.x = (x - 1 < 0) ? -1 : x - 1
         TL.y = (x - 1 < 0) ? -1 : y
-        TR.x = (x - 1 < 0 || y + 1 > 2 * level - x) ? -1 : x - 1
-        TR.y = (x - 1 < 0 || y + 1 > 2 * level - x) ? -1 : y + 1
+        TR.x = (x - 1 < 0 || y + 1 > 2 * level - x + 1) ? -1 : x - 1
+        TR.y = (x - 1 < 0 || y + 1 > 2 * level - x + 1) ? -1 : y + 1
         // 中部
         ML.x = (y - 1 < 0) ? -1 : x
         ML.y = (y - 1 < 0) ? -1 : y - 1
         MR.x = (y + 1 > 2 * level - x) ? -1 : x
         MR.y = (y + 1 > 2 * level - x) ? -1 : y + 1
         // 底部
-        BL.x = (x + 1 > 2 * level || y - 1 < 0) ? -1 : x + 1
-        BL.y = (x + 1 > 2 * level || y - 1 < 0) ? -1 : y - 1
-        BR.x = (x + 1 > 2 * level || y > 2 * level - x - 1) ? -1 : x + 1
-        BR.y = (x + 1 > 2 * level || y > 2 * level - x - 1) ? -1 : y
+        BL.x = (x + 1 > 2 * level - 2 || y - 1 < 0) ? -1 : x + 1
+        BL.y = (x + 1 > 2 * level - 2 || y - 1 < 0) ? -1 : y - 1
+        BR.x = (x + 1 > 2 * level - 2 || y > 2 * level - x - 1) ? -1 : x + 1
+        BR.y = (x + 1 > 2 * level - 2 || y > 2 * level - x - 1) ? -1 : y
       }
       border[0] = TL
       border[1] = TR
@@ -150,57 +137,71 @@ export default {
       return border
     },
     activeItem: function (fromState, x, y) {
-      let feilds = this.feilds
       let item = this.feilds[x][y]
       // console.log(item, x, y)
-      if (this.feildsShow['a' + x + '_' + y].active === true && fromState !== -1) {
+      if (item.active === true && fromState !== -1) {
         // 已经是激活态
         return
       }
       if (fromState !== -1 && item.showList[(fromState + 3) % 6] === false) {
         // 未连接
-        // return
+        return
       }
       // let feildsT = this.feilds
-      this.feildsShow['a' + x + '_' + y] = {
-        active: true
-      }
+      item.active = true
+      let row = this.feilds[x]
+      row[y] = item
+      Vue.set(this.feilds, x, row)
       // this.feilds = feildsT
       console.log('delight x: ' + x + 'y: ' + y)
-      console.log(this.feildsShow)
       for (let i = 0; i < 6; i++) {
         if (item.border[i].x === -1 || item.showList[i] === false) {
           continue
         }
-        let next = feilds[item.border[i].x][item.border[i].y]
+        let next = this.feilds[item.border[i].x][item.border[i].y]
         if (next.showList[(i + 3) % 6] === false || next.active === true) {
+          // 下一个控件没有连接本控件或者下一个控件已经被点亮
           continue
         }
         this.activeItem(i, item.border[i].x, item.border[i].y)
       }
-      // for (let item in this.feilds[x][y]) {
-        // console.log(item)
-      // }
+    },
+    putOffAll () {
+      let feild = this.feilds
+      for (let i = 0, length = this.feilds.length; i < length; i++) {
+        for (let j = 0, length2 = this.feilds[i].length; j < length2; j++) {
+          // debugger
+          if (!feild[i][j].active) {
+            continue
+          }
+          if (i === this.initPosition.x && j === this.initPosition.y) {
+            continue
+          }
+          let row = feild[i]
+          row[j].active = false
+          Vue.set(this.feilds, i, row)
+        }
+      }
+    },
+    turnItem (x, y) {
+      this.putOffAll()
+      let showList = this.feilds[x][y].showList
+      let newList = []
+      for (let i = 0; i < showList.length; i++) {
+        newList[(i + 1) % 6] = showList[i]
+      }
+      showList = newList
+      let row = this.feilds[x]
+      row[y].showList = showList
+      Vue.set(this.feilds, x, row)
+      this.activeItem(-1, this.initPosition.x, this.initPosition.y)
+      // window.console.log(showList)
     }
   },
   created: function () {
     this.feilds = this.initFeild()
   },
   ready: function () {
-  },
-  events: {
-    'item-click': function (x, y) {
-      // console.log(this.active[0][0])
-      // this.active[0][0] = !this.active[0][0]
-      // let item = [this.active[0][0]]
-      // this.active.splice(0, 1, item)
-      // let feildsT = this.feilds
-      // this.feildsShow['a' + 2 + '_' + 2].active = !this.feildsShow['a2_2'].active
-      // this.feilds.$set(1, feildsT[1])
-      // console.log(feildsT['_' + 1 + '#' + 1].active)
-      // console.log(this.feildsShow)
-      this.activeItem(-1, this.initPosition.x, this.initPosition.y)
-    }
   },
   components: {
     'hexagon-component': require('./Hexagon.vue')

@@ -58,13 +58,8 @@ export default {
   },
   methods: {
     turned: function () {
-      let showList = this.showList
-      let newList = []
-      for (let i = 0; i < showList.length; i++) {
-        newList[(i + 1) % 6] = showList[i]
-      }
-      this.showList = newList
-      this.$emit('item-click', this.x, this.y)
+      // window.console.log('x:' + this.x + ' y:' + this.y)
+      this.$emit('turn', this.x, this.y)
     }
   }
 }
