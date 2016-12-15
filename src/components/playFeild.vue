@@ -47,15 +47,18 @@ export default {
   methods: {
     initFeild: function () {
       // let onePipe = [false, false, false, true, false, false]
-      // let twoPipe = [false, true, false, false, true, true]
+      let twoPipe = [false, true, false, false, true, false]
+      let twoPipe2 = [false, true, false, false, true, true]
+      let twoPipe3 = [true, false, true, false, true, true]
       let threePipe = [false, true, false, true, false, true]
+      let pipeList = [twoPipe, twoPipe2, twoPipe3, threePipe]
       let level = 3
       let feildsT = this.feilds
       for (let i = level, index = 0; i <= 2 * level - 1; i++, index++) {
         feildsT[index] = []
         for (let j = 0; j < i; j++) {
           feildsT[index][j] = {}
-          feildsT[index][j].showList = threePipe
+          feildsT[index][j].showList = pipeList[Math.floor(Math.random() * pipeList.length)]
           feildsT[index][j].border = this.getBorder(index, j, level)
           feildsT[index][j].active = false
         }
@@ -65,7 +68,7 @@ export default {
           feildsT[index] = []
           for (let j = 0; j < i; j++) {
             feildsT[index][j] = {}
-            feildsT[index][j].showList = threePipe
+            feildsT[index][j].showList = pipeList[Math.floor(Math.random() * pipeList.length)]
             feildsT[index][j].border = this.getBorder(index, j, level)
             this.feildsShow['a' + index + '_' + j] = {
               active: false
